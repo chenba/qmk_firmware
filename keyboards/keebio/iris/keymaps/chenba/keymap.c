@@ -21,7 +21,9 @@ enum custom_keycodes {
     VI_YANK,
     VI_PUT,
     VI_UNDO,
+    GUI_SFT_O,
     GUI_SFT_P,
+    SFT_F12,
     WORD_LEFT,
     WORD_RGHT,
     SEL_WORD,
@@ -47,7 +49,8 @@ typedef struct {
 
 enum td_keycodes {
     TD_SCLN_RCTL,
-    TD_QUOT_RGUI
+    TD_QUOT_RGUI,
+    TD_DOT_ARROW
 };
 
 td_state_t cur_dance(qk_tap_dance_state_t *state);
@@ -55,6 +58,8 @@ void       scln_rctl_finished(qk_tap_dance_state_t *state, void *user_data);
 void       scln_rctl_reset(qk_tap_dance_state_t *state, void *user_data);
 void       quot_rgui_finished(qk_tap_dance_state_t *state, void *user_data);
 void       quot_rgui_reset(qk_tap_dance_state_t *state, void *user_data);
+void       dot_arrow_finished(qk_tap_dance_state_t *state, void *user_data);
+void       dot_arrow_reset(qk_tap_dance_state_t *state, void *user_data);
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -66,9 +71,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LGUI, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                                  KC_H,    KC_J,    KC_K,    KC_L,   TD(TD_SCLN_RCTL), TD(TD_QUOT_RGUI),
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_AUDIO_MUTE,       FONT_0,   KC_N,   KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
+     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_AUDIO_MUTE,       FONT_0,   KC_N,   KC_M,   KC_COMM,TD(TD_DOT_ARROW),KC_SLSH,KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    MT(MOD_LCTL,KC_MINS), LOWER, KC_ENT,            KC_SPC,  RAISE,   KC_RALT
+                                    KC_LCTL, LOWER,   KC_ENT,                       KC_SPC,  RAISE,   KC_RALT
                                 // └────────┴────────┴────────┘                    └────────┴────────┴────────┘
   ),
 
@@ -90,9 +95,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                             ┌────────┬────────┬────────┬────────┬────────┬────────┐
      KC_F12,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                                 KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, _______, SEL_WORD, KC_TAB, _______, TAB_NEW,                               _______, _______, KC_RGUI, _______, GUI_SFT_P, _______,
+     _______, _______, SEL_WORD, KC_TAB, _______, TAB_NEW,                               _______, _______, KC_RGUI,GUI_SFT_O,GUI_SFT_P,_______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, _______, _______, KC_TILD, KC_MINS, KC_UNDS,                               _______, KC_PGDN, KC_PGUP, _______, ALT_SPC, _______,
+     _______, _______, _______, KC_TILD, KC_MINS, KC_UNDS,                               _______, KC_PGDN, KC_PGUP, SFT_F12, ALT_SPC, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, TAB_PREV, TAB_KILL, NAV_LEFT, NAV_RGHT, TAB_NEXT, _______,        _______, _______, _______,  _______, _______, _______, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -143,9 +148,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
 
+        // Browser private window or VS Code command palette
         case GUI_SFT_P:
             if (record->event.pressed) {
                 SEND_STRING(SS_LGUI(SS_LSFT("p")));
+            }
+            return false;
+
+        // VS Code current file symbols
+        case GUI_SFT_O:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LGUI(SS_LSFT("o")));
+            }
+            return false;
+
+        // VS Code find usage
+        case SFT_F12:
+            if (record->event.pressed) {
+                register_code(KC_LSFT);
+                tap_code(KC_F12);
+                unregister_code(KC_LSFT);
             }
             return false;
 
@@ -364,9 +386,34 @@ void quot_rgui_reset(qk_tap_dance_state_t *state, void *user_data) {
     quot_rgui_tap_state.state = TD_NONE;
 }
 
+static td_tap_t dot_arrow_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void dot_arrow_finished(qk_tap_dance_state_t *state, void *user_data) {
+    dot_arrow_tap_state.state = cur_dance(state);
+
+    switch (dot_arrow_tap_state.state) {
+        case TD_SINGLE_TAP:
+            SEND_STRING(".");
+            break;
+        case TD_DOUBLE_TAP:
+            SEND_STRING("->");
+            break;
+        default:
+            break;
+    }
+}
+
+void dot_arrow_reset(qk_tap_dance_state_t *state, void *user_data) {
+    dot_arrow_tap_state.state = TD_NONE;
+}
+
 qk_tap_dance_action_t tap_dance_actions[] = {
     [TD_SCLN_RCTL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, scln_rctl_finished, scln_rctl_reset),
-    [TD_QUOT_RGUI] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, quot_rgui_finished, quot_rgui_reset)
+    [TD_QUOT_RGUI] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, quot_rgui_finished, quot_rgui_reset),
+    [TD_DOT_ARROW] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dot_arrow_finished, dot_arrow_reset)
 };
 //*/
 
