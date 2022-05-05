@@ -271,19 +271,19 @@ void matrix_scan_user(void) {
         leading = false;
         leader_end();
 
-        SEQ_TWO_KEYS(KC_COMMA, KC_COMMA) {
+        SEQ_TWO_KEYS(KC_H, KC_H) {
             register_code(KC_LCTL);
             tap_code(KC_LEFT);
             unregister_code(KC_LCTL);
         }
 
-        SEQ_TWO_KEYS(KC_DOT, KC_DOT) {
+        SEQ_TWO_KEYS(KC_L, KC_L) {
             register_code(KC_LCTL);
             tap_code(KC_RIGHT);
             unregister_code(KC_LCTL);
         }
 
-        SEQ_TWO_KEYS(KC_L, KC_L) {
+        SEQ_TWO_KEYS(KC_BSPC, KC_BSPC) {
             SEND_STRING(SS_LCTL(SS_LGUI("q")));
         }
 
