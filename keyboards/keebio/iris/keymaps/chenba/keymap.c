@@ -8,6 +8,9 @@
 #define LOWER LT(_LOWER, KC_GRV)
 #define RAISE LT(_RAISE, KC_ESC)
 
+#define SCLN_RCTL MT(MOD_RCTL, KC_SCLN)
+#define QUOT_RGUI MT(MOD_RGUI, KC_QUOT)
+
 enum custom_keycodes {
     QWERTY = SAFE_RANGE,
     FONT_0,
@@ -48,16 +51,10 @@ typedef struct {
 } td_tap_t;
 
 enum td_keycodes {
-    TD_SCLN_RCTL,
-    TD_QUOT_RGUI,
     TD_DOT_ARROW
 };
 
 td_state_t cur_dance(qk_tap_dance_state_t *state);
-void       scln_rctl_finished(qk_tap_dance_state_t *state, void *user_data);
-void       scln_rctl_reset(qk_tap_dance_state_t *state, void *user_data);
-void       quot_rgui_finished(qk_tap_dance_state_t *state, void *user_data);
-void       quot_rgui_reset(qk_tap_dance_state_t *state, void *user_data);
 void       dot_arrow_finished(qk_tap_dance_state_t *state, void *user_data);
 void       dot_arrow_reset(qk_tap_dance_state_t *state, void *user_data);
 
@@ -69,7 +66,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                                  KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LGUI, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                                  KC_H,    KC_J,    KC_K,    KC_L,   TD(TD_SCLN_RCTL), TD(TD_QUOT_RGUI),
+     KC_LGUI, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                                  KC_H,    KC_J,    KC_K,    KC_L,   SCLN_RCTL,QUOT_RGUI,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_AUDIO_MUTE,       FONT_0,   KC_N,   KC_M,   KC_COMM,TD(TD_DOT_ARROW),KC_SLSH,KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -271,6 +268,10 @@ void matrix_scan_user(void) {
         leading = false;
         leader_end();
 
+        SEQ_ONE_KEY(KC_Q) {
+            SEND_STRING(SS_LGUI("q"));
+        }
+
         SEQ_TWO_KEYS(KC_H, KC_H) {
             register_code(KC_LCTL);
             tap_code(KC_LEFT);
@@ -319,73 +320,6 @@ td_state_t cur_dance(qk_tap_dance_state_t *state) {
     return TD_UNKNOWN;
 }
 
-static td_tap_t scln_rctl_tap_state = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
-
-void scln_rctl_finished(qk_tap_dance_state_t *state, void *user_data) {
-    scln_rctl_tap_state.state = cur_dance(state);
-
-    switch (scln_rctl_tap_state.state) {
-        case TD_SINGLE_TAP:
-            SEND_STRING(";");
-            break;
-        case TD_SINGLE_HOLD:
-            register_code(KC_RCTL);
-            break;
-        case TD_DOUBLE_TAP:
-            SEND_STRING(":");
-            break;
-        default:
-            break;
-    }
-}
-void scln_rctl_reset(qk_tap_dance_state_t *state, void *user_data) {
-    switch (scln_rctl_tap_state.state) {
-        case TD_SINGLE_HOLD:
-            unregister_code(KC_RCTL);
-            break;
-        default:
-            break;
-    }
-    scln_rctl_tap_state.state = TD_NONE;
-}
-
-static td_tap_t quot_rgui_tap_state = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
-
-void quot_rgui_finished(qk_tap_dance_state_t *state, void *user_data) {
-    quot_rgui_tap_state.state = cur_dance(state);
-
-    switch (quot_rgui_tap_state.state) {
-        case TD_SINGLE_TAP:
-            SEND_STRING("'");
-            break;
-        case TD_SINGLE_HOLD:
-            register_code(KC_RGUI);
-            break;
-        case TD_DOUBLE_TAP:
-            SEND_STRING("\"");
-            break;
-        default:
-            break;
-    }
-}
-
-void quot_rgui_reset(qk_tap_dance_state_t *state, void *user_data) {
-    switch (quot_rgui_tap_state.state) {
-        case TD_SINGLE_HOLD:
-            unregister_code(KC_RGUI);
-            break;
-        default:
-            break;
-    }
-    quot_rgui_tap_state.state = TD_NONE;
-}
-
 static td_tap_t dot_arrow_tap_state = {
     .is_press_action = true,
     .state = TD_NONE
@@ -399,7 +333,7 @@ void dot_arrow_finished(qk_tap_dance_state_t *state, void *user_data) {
             SEND_STRING(".");
             break;
         case TD_DOUBLE_TAP:
-            SEND_STRING("->");
+            SEND_STRING("=>");
             break;
         default:
             break;
@@ -411,8 +345,6 @@ void dot_arrow_reset(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [TD_SCLN_RCTL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, scln_rctl_finished, scln_rctl_reset),
-    [TD_QUOT_RGUI] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, quot_rgui_finished, quot_rgui_reset),
     [TD_DOT_ARROW] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dot_arrow_finished, dot_arrow_reset)
 };
 //*/
