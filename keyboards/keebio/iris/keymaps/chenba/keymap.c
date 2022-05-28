@@ -272,6 +272,12 @@ void matrix_scan_user(void) {
             SEND_STRING(SS_LGUI("q"));
         }
 
+        SEQ_ONE_KEY(KC_M) {
+            register_code(KC_LCTL);
+            tap_code(KC_F2);
+            unregister_code(KC_LCTL);
+        }
+
         SEQ_TWO_KEYS(KC_H, KC_H) {
             register_code(KC_LCTL);
             tap_code(KC_LEFT);
@@ -282,6 +288,10 @@ void matrix_scan_user(void) {
             register_code(KC_LCTL);
             tap_code(KC_RIGHT);
             unregister_code(KC_LCTL);
+        }
+
+        SEQ_TWO_KEYS(KC_S, KC_S) {
+            SEND_STRING(SS_LGUI(SS_LSFT("5")));
         }
 
         SEQ_TWO_KEYS(KC_BSPC, KC_BSPC) {
