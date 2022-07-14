@@ -29,6 +29,8 @@ enum custom_keycodes {
     SFT_F12,
     WORD_LEFT,
     WORD_RGHT,
+    LINE_START,
+    LINE_END,
     SEL_WORD,
     MENU_Q
 };
@@ -80,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, _______, _______, _______, _______,                               VI_YANK, VI_UNDO, _______, _______, VI_PUT,  _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, WORD_LEFT,KC_HOME,KC_END,WORD_RGHT, _______,                               KC_LEFT,  KC_DOWN, KC_UP,  KC_RIGHT, KC_PLUS, KC_EQL,
+     _______, WORD_LEFT,LINE_START,LINE_END,WORD_RGHT,_______,                           KC_LEFT,  KC_DOWN, KC_UP,  KC_RIGHT, KC_PLUS, KC_EQL,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, _______, _______, _______, _______, _______,             _______, _______, MENU_Q,  KC_LBRC, KC_RBRC, KC_MINS, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -223,6 +225,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 register_code(KC_LALT);
                 tap_code(KC_RGHT);
                 unregister_code(KC_LALT);
+            }
+            return false;
+
+        case LINE_START:
+            if (record->event.pressed) {
+                register_code(KC_LGUI);
+                tap_code(KC_LEFT);
+                unregister_code(KC_LGUI);
+            }
+            return false;
+
+        case LINE_END:
+            if (record->event.pressed) {
+                register_code(KC_LGUI);
+                tap_code(KC_RGHT);
+                unregister_code(KC_LGUI);
             }
             return false;
 
