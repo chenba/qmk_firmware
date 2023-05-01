@@ -21,6 +21,7 @@ enum custom_keycodes {
     NAV_LEFT,
     NAV_RGHT,
     ALT_SPC,
+    CTL_SPC,
     VI_YANK,
     VI_PUT,
     VI_UNDO,
@@ -32,33 +33,34 @@ enum custom_keycodes {
     LINE_START,
     LINE_END,
     SEL_WORD,
-    MENU_Q
+    MENU_Q,
+    PRGM_TOGL
 };
 
-typedef enum {
-    TD_NONE,
-    TD_UNKNOWN,
-    TD_SINGLE_TAP,
-    TD_SINGLE_HOLD,
-    TD_DOUBLE_TAP,
-    TD_DOUBLE_HOLD,
-    TD_DOUBLE_SINGLE_TAP,
-    TD_TRIPLE_TAP,
-    TD_TRIPLE_HOLD
-} td_state_t;
+// typedef enum {
+//     TD_NONE,
+//     TD_UNKNOWN,
+//     TD_SINGLE_TAP,
+//     TD_SINGLE_HOLD,
+//     TD_DOUBLE_TAP,
+//     TD_DOUBLE_HOLD,
+//     TD_DOUBLE_SINGLE_TAP,
+//     TD_TRIPLE_TAP,
+//     TD_TRIPLE_HOLD
+// } td_state_t;
 
-typedef struct {
-    bool       is_press_action;
-    td_state_t state;
-} td_tap_t;
+// typedef struct {
+//     bool       is_press_action;
+//     td_state_t state;
+// } td_tap_t;
 
-enum td_keycodes {
-    TD_DOT_ARROW
-};
+// enum td_keycodes {
+//     TD_DOT_ARROW
+// };
 
-td_state_t cur_dance(qk_tap_dance_state_t *state);
-void       dot_arrow_finished(qk_tap_dance_state_t *state, void *user_data);
-void       dot_arrow_reset(qk_tap_dance_state_t *state, void *user_data);
+// td_state_t cur_dance(qk_tap_dance_state_t *state);
+// void       dot_arrow_finished(qk_tap_dance_state_t *state, void *user_data);
+// void       dot_arrow_reset(qk_tap_dance_state_t *state, void *user_data);
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -70,7 +72,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LGUI, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                                  KC_H,    KC_J,    KC_K,    KC_L,   SCLN_RCTL,QUOT_RGUI,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_AUDIO_MUTE,       FONT_0,   KC_N,   KC_M,   KC_COMM,TD(TD_DOT_ARROW),KC_SLSH,KC_RSFT,
+     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_AUDIO_MUTE,       FONT_0,   KC_N,   KC_M,     KC_COMM, KC_DOT,  KC_SLSH,KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                     KC_LCTL, LOWER,   KC_ENT,                       KC_SPC,  RAISE,   KC_RALT
                                 // └────────┴────────┴────────┘                    └────────┴────────┴────────┘
@@ -86,7 +88,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, _______, _______, _______, _______, _______,             _______, _______, MENU_Q,  KC_LBRC, KC_RBRC, KC_MINS, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    _______, _______, _______,                      _______,  _______, _______
+                                    _______, _______, _______,                      PRGM_TOGL,  _______, _______
                                 // └────────┴────────┴────────┘                    └────────┴────────┴────────┘
   ),
 
@@ -96,7 +98,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, SEL_WORD, KC_TAB, _______, TAB_NEW,                               _______, _______, KC_RGUI,GUI_SFT_O,GUI_SFT_P,_______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, _______, _______, KC_TILD, KC_MINS, KC_UNDS,                               _______, KC_PGDN, KC_PGUP, SFT_F12, ALT_SPC, _______,
+     _______, CTL_SPC, _______, KC_TILD, KC_MINS, KC_UNDS,                               _______, KC_PGDN, KC_PGUP, SFT_F12, ALT_SPC, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, TAB_PREV, TAB_KILL, NAV_LEFT, NAV_RGHT, TAB_NEXT, _______,        _______, _______, _______,  _______, _______, _______, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -212,6 +214,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
 
+        case CTL_SPC:
+            if (record->event.pressed) {
+                register_code(KC_LCTL);
+                tap_code(KC_SPC);
+                unregister_code(KC_LCTL);
+            }
+            return false;
+
         case WORD_LEFT:
             if (record->event.pressed) {
                 register_code(KC_LALT);
@@ -260,6 +270,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
 
+        case PRGM_TOGL:
+            if (record->event.pressed) {
+                register_code(KC_LGUI);
+                tap_code(KC_TAB);
+                unregister_code(KC_LGUI);
+            }
+            return false;
 
         // Right rotary encoder key
         case FONT_0:
@@ -286,7 +303,7 @@ void matrix_scan_user(void) {
         leading = false;
         leader_end();
 
-        SEQ_ONE_KEY(KC_Q) {
+        SEQ_ONE_KEY(KC_BSPC) {
             SEND_STRING(SS_LGUI("q"));
         }
 
@@ -319,11 +336,25 @@ void matrix_scan_user(void) {
         SEQ_TWO_KEYS(KC_W, KC_M) {
             SEND_STRING(SS_LCTL(SS_LALT(SS_LGUI(" "))));
         }
+        SEQ_TWO_KEYS(KC_W, KC_L) {
+            register_code(KC_LCTL);
+            register_code(KC_LALT);
+            tap_code(KC_RIGHT);
+            unregister_code(KC_LALT);
+            unregister_code(KC_LCTL);
+        }
+        SEQ_TWO_KEYS(KC_W, KC_H) {
+            register_code(KC_LCTL);
+            register_code(KC_LALT);
+            tap_code(KC_LEFT);
+            unregister_code(KC_LALT);
+            unregister_code(KC_LCTL);
+        }
     }
 }
 
 // Tap dance
-//*
+/*
 td_state_t cur_dance(qk_tap_dance_state_t *state) {
     if (state->count == 1) {
         if (state->interrupted || !state->pressed)
