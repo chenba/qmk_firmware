@@ -34,7 +34,15 @@ enum custom_keycodes {
     LINE_END,
     SEL_WORD,
     MENU_Q,
-    PRGM_TOGL
+    PRGM_TOGL,
+
+    // App switch with Raycast on macOs
+    AP_FIREFOX,
+    AP_NIGHTLY,
+    AP_KITTY,
+    AP_CODE,
+    AP_SLACK,
+    AP_ZOOM
 };
 
 // typedef enum {
@@ -86,7 +94,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, WORD_LEFT,LINE_START,LINE_END,WORD_RGHT,_______,                           KC_LEFT,  KC_DOWN, KC_UP,  KC_RIGHT, KC_PLUS, KC_EQL,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, _______, _______, KC_MPLY, _______, _______, _______,             _______, _______, MENU_Q,  KC_LBRC, KC_RBRC, KC_MINS, _______,
+     _______, _______, KC_MPRV, KC_MPLY, KC_MNXT, _______, _______,             _______, _______, MENU_Q,  KC_LBRC, KC_RBRC, KC_MINS, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                     _______, _______, _______,                      PRGM_TOGL,  _______, _______
                                 // └────────┴────────┴────────┘                    └────────┴────────┴────────┘
@@ -98,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, SEL_WORD, KC_TAB, _______, TAB_NEW,                               _______, _______, KC_RGUI,GUI_SFT_O,GUI_SFT_P,_______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, CTL_SPC, _______, KC_TILD, KC_MINS, KC_UNDS,                               _______, KC_PGDN, KC_PGUP, SFT_F12, ALT_SPC, _______,
+     _______, CTL_SPC, ALT_SPC, KC_TILD, KC_MINS, KC_UNDS,                               _______, KC_PGDN, KC_PGUP, SFT_F12, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, TAB_PREV, TAB_KILL, NAV_LEFT, NAV_RGHT, TAB_NEXT, _______,        _______, _______, _______,  _______, _______, _______, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -112,7 +120,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
      RGB_TOG, _______, _______, _______, _______, _______,                               _______, _______, _______, _______, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                             ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_CAPS, _______, _______, _______, _______, _______,                               _______, _______, _______, _______, _______, _______,
+     KC_CAPS, AP_ZOOM,AP_SLACK,AP_CODE, AP_FIREFOX,_______,                              _______, _______,AP_KITTY,AP_NIGHTLY,_______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐           ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, _______, _______, _______, _______, _______,             _______, _______, _______, _______, _______, _______, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘           └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -284,6 +292,67 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(SS_LGUI("0"));
             }
             return false;
+
+        // App switching
+        case AP_FIREFOX:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LALT(" "));
+                _delay_ms(75);
+                SEND_STRING("firefox");
+                _delay_ms(75);
+                tap_code(KC_ENT);
+            }
+            return false;
+
+        case AP_NIGHTLY:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LALT(" "));
+                _delay_ms(75);
+                SEND_STRING("nightly");
+                _delay_ms(75);
+                tap_code(KC_ENT);
+            }
+            return false;
+
+        case AP_KITTY:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LALT(" "));
+                _delay_ms(75);
+                SEND_STRING("kitty");
+                _delay_ms(75);
+                tap_code(KC_ENT);
+            }
+            return false;
+
+        case AP_CODE:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LALT(" "));
+                _delay_ms(75);
+                SEND_STRING("code");
+                _delay_ms(75);
+                tap_code(KC_ENT);
+            }
+            return false;
+
+        case AP_SLACK:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LALT(" "));
+                _delay_ms(75);
+                SEND_STRING("slack");
+                _delay_ms(75);
+                tap_code(KC_ENT);
+            }
+            return false;
+
+        case AP_ZOOM:
+            if (record->event.pressed) {
+                SEND_STRING(SS_LALT(" "));
+                _delay_ms(75);
+                SEND_STRING("z");
+                _delay_ms(75);
+                tap_code(KC_ENT);
+            }
+            return false;
     }
     return true;
 }
@@ -309,6 +378,21 @@ void matrix_scan_user(void) {
 
         SEQ_ONE_KEY(KC_L) {
             SEND_STRING("() => {}");
+            tap_code(KC_LEFT);
+        }
+
+        SEQ_ONE_KEY(KC_H) {
+            SEND_STRING("[]");
+            tap_code(KC_LEFT);
+        }
+
+        SEQ_ONE_KEY(KC_J) {
+            SEND_STRING("()");
+            tap_code(KC_LEFT);
+        }
+
+        SEQ_ONE_KEY(KC_K) {
+            SEND_STRING("{}");
             tap_code(KC_LEFT);
         }
 
